@@ -19,7 +19,7 @@ var body = document.getElementsByTagName("body")[0];
 
 var message = document.getElementById("message");
 console.log(message);
-message.innerHTML = "Please Submit a Homework Assignment";
+message.innerHTML = "Please Submit a Homework Assignment type :a to create a new alarm";
 
 body.style.background = gradient;
 var socket = io.connect();
@@ -30,7 +30,15 @@ var passwordForm = document.getElementById("passwordF");
 
 // 3. Add event handler
 button.addEventListener ("click", function() {
-  socket.emit('new assignment', [assignmentForm.value, dateForm.value, hourForm.value, passwordForm.value.hashCode()]);
+  var assign = assignmentForm.value; 
+  var date = dateForm.value;
+  var hour = hourForm.value;
+  if (assign.startsWith(':a'){
+    socket.emit('new alarm', [assign.replace(':a',''), date.replace(':a',''), hour, passwordForm.value.hashCode()]);
+  }
+  else{
+    socket.emit('new assignment', [assignmentForm.value, dateForm.value, hourForm.value, passwordForm.value.hashCode()]);
+  }
 });
 
 

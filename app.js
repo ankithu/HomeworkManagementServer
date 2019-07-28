@@ -9,6 +9,7 @@ var server = http.Server(app);
 var io = socketIO(server);
 
 var assignments = [];
+var alarms = [];
 
 var currentPassword = -741086112;
 
@@ -20,8 +21,11 @@ app.get('/', function(request, response) {
   response.sendFile(path.join(__dirname, 'index.html'));
 });
 
-app.get('/api', function(request,response){
+app.get('/api/assignments', function(request,response){
   response.send(assignments)
+})
+app.get('/api/alarms', function(request,response){
+  response.send(alarms)
 })
 const port=process.env.PORT || 3000
 server.listen(port,() => {
@@ -47,6 +51,23 @@ io.on('connection', function(socket) {
       assignments.push(entry);
       console.log(assignments)
       io.sockets.emit("good");
+    }
+    else{
+      io.sockets.emit("error");
+    }
+  });
+  socket.on('new alarm', function(alarm){
+    console.log(alarm)
+    console.log(alarm[3])
+    if (alarm[3] == currentPassword){
+      console.log("succsessful password attempt");
+      var entry = {
+        "alarm":assignment[0],
+        "time":assignment[1],
+      }
+      alarms.push(entry);
+      console.log(alarms)
+      io.sockets.emit("good alarm");
     }
     else{
       io.sockets.emit("error");

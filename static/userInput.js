@@ -19,7 +19,7 @@ var body = document.getElementsByTagName("body")[0];
 
 var message = document.getElementById("message");
 console.log(message);
-message.innerHTML = "Please Submit a Homework Assignment type :a to create a new alarm";
+message.innerHTML = "Please Submit a Homework Assignment. type :a to create a new alarm";
 
 body.style.background = gradient;
 var socket = io.connect();
@@ -46,6 +46,10 @@ button.addEventListener ("click", function() {
 
 socket.on('good', function(){
   message.innerHTML = "assignment recorded"
+  
+});
+socket.on('good alarm', function(){
+  message.innerHTML = "alarm recorded"
   
 });
 socket.on('error', function(){

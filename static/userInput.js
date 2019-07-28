@@ -5,7 +5,7 @@ socket.on('message', function(data) {
 
 
 var isPlayer = true;
-const gradient = "linear-gradient(to right, #f12711, #f5af19)"
+const gradient = "linear-gradient(to right, #a8ff78, #78ffd6)"
 
 
 var button = document.getElementById("button");

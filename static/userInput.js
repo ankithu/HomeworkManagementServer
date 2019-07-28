@@ -33,7 +33,7 @@ button.addEventListener ("click", function() {
   var assign = assignmentForm.value; 
   var date = dateForm.value;
   var hour = hourForm.value;
-  if (assign.startsWith(':a'){
+  if (assign.startsWith(':a')){
     socket.emit('new alarm', [assign.replace(':a',''), date.replace(':a',''), hour, passwordForm.value.hashCode()]);
   }
   else{

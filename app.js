@@ -62,8 +62,8 @@ io.on('connection', function(socket) {
     if (alarm[3] == currentPassword){
       console.log("succsessful password attempt");
       var entry = {
-        "alarm":assignment[0],
-        "time":assignment[1],
+        "alarm":alarm[0],
+        "time":alarm[1],
       }
       alarms.push(entry);
       console.log(alarms)

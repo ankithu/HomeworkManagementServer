@@ -73,5 +73,29 @@ io.on('connection', function(socket) {
       io.sockets.emit("error");
     }
   });
+  socket.on('delete alarm', function(alarm){
+    console.log(alarm)
+    console.log(alarm[3])
+    if (alarm[3] == currentPassword){
+      console.log("succsessful password attempt");
+      var entry = {
+        "alarm":alarm[0],
+        "time":alarm[1],
+      }
+      var index = alarms.indexOf(entry);
+      if (index > -1) {
+        alarms.splice(index, 1);
+        console.log(alarms);
+        io.sockets.emit("good alarm delete");
+      }
+      else{
+        io.sockets.emit("a dne")
+      }
+     
+    }
+    else{
+      io.sockets.emit("error");
+    }
+  });
 
 });

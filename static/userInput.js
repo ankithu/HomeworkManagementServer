@@ -19,7 +19,7 @@ var body = document.getElementsByTagName("body")[0];
 
 var message = document.getElementById("message");
 console.log(message);
-message.innerHTML = "Please Submit a Homework Assignment. type :a to create a new alarm";
+message.innerHTML = "Please Submit a Homework Assignment. Commands: :a to create a new alarm, :d to delete an alarm";
 
 body.style.background = gradient;
 var socket = io.connect();
@@ -36,6 +36,9 @@ button.addEventListener ("click", function() {
   if (assign.startsWith(':a')){
     socket.emit('new alarm', [assign.replace(':a',''), date.replace(':a',''), hour, passwordForm.value.hashCode()]);
   }
+  else if (assign.startsWith(':d')){
+    socket.emit('delete alarm', [assign.replace(':d',''), date.replace(':d',''), hour, passwordForm.value.hashCode()]);
+  }
   else{
     socket.emit('new assignment', [assignmentForm.value, dateForm.value, hourForm.value, passwordForm.value.hashCode()]);
   }
@@ -50,6 +53,14 @@ socket.on('good', function(){
 });
 socket.on('good alarm', function(){
   message.innerHTML = "alarm recorded"
+  
+});
+socket.on('good alarm delete', function(){
+  message.innerHTML = "alarm deleted"
+  
+});
+socket.on('a dne', function(){
+  message.innerHTML = "alarm cannot be deleted because it does not exist"
   
 });
 socket.on('error', function(){

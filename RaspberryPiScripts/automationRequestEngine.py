@@ -1,8 +1,9 @@
 #import necesary libs
 import requests
 import json
-import datetime
+from datetime import datetime 
 import time as t
+import lightsEngine as lights
 
 #master lists for assignment and alarm storage
 alarms = []
@@ -36,4 +37,10 @@ while True:
                 if item not in homework:
                         homework.append(item)
         print(homework)
-        t.sleep(10)
+        now = datetime.now()
+        clock = now.strftime("%H:%M")
+        print(clock)
+        if any(alarm['time'] == clock for alarm in alarms) or (any(alarm['time'] == clock[1:] for alarm in alarms) and clock[0]=='0'):
+                print("ALARM ALERT")
+                lights.lights(True)
+        t.sleep(1)

@@ -4,43 +4,54 @@ import json
 from datetime import datetime 
 import time as t
 import lightsEngine as lights
-
+import speechEngine
+import requestToSheetsEngineTester as requestToSheet
+import googleCalenderEngine as calenderSpeech
 #master lists for assignment and alarm storage
 alarms = []
 homework = []
 
+#program states
+prevSwitch = lights.getSwitch()
+class State():
+        WAITING = 0
+        ALARM = 1
+        ASSIGNMENTS = 2
+
+state = State.WAITING
 #Loop forever
 while True:
-        #make and process a request to the alarms section of the api. Parse all alarms and add it to the list if it's unique
-        alarmR  = requests.get("http://homework-manage.herokuapp.com/api/alarms")
-        alarmsString = alarmR.content
-        alarmObjects = json.loads(alarmsString)
-        #clears the list in case the user removed alarms using web interface
-        alarms *= 0
-        for alarmObject in alarmObjects:
-                name = alarmObject["alarm"]
-                time = alarmObject["time"]
-                item = {"time": time, "message": name}
-                #precautionary for duplicates
-                if item not in alarms:
-                        alarms.append(item)
-        print(alarms)
-        #make and process a request to the assignments section of the api. Parse all assignments and add it to the list if its unique
-        assignR = requests.get("http://homework-manage.herokuapp.com/api/assignments")
-        assignString = assignR.content
-        assignObjects = json.loads(assignString)
-        for assignObject in assignObjects:
-                name = assignObject["assignment"]
-                duedate = assignObject["duedate"]
-                hour = assignObject["hour"]
-                item = {"duedate":duedate,"hour":hour,"name":name}
-                if item not in homework:
-                        homework.append(item)
-        print(homework)
-        now = datetime.now()
-        clock = now.strftime("%H:%M")
-        print(clock)
-        if any(alarm['time'] == clock for alarm in alarms) or (any(alarm['time'] == clock[1:] for alarm in alarms) and clock[0]=='0'):
+        switch = lights.getSwitch()
+        toggle = (switch != prevSwitch)
+        if (state == State.WAITING):
+                alarms = requestToSheet.getAlarmList()
+                print(alarms)
+                print(homework)
+                now = datetime.now()
+                clock = now.strftime("%H:%M")
+                print(clock)
+                #alarm condition met
+                if any(alarm['time'] == clock for alarm in alarms) or (any(alarm['time'] == clock[1:] for alarm in alarms) and clock[0]=='0'):
+                        state = State.ALARM 
+                else:  
+                        t.sleep(10)
+        elif (state == State.ALARM):
                 print("ALARM ALERT")
-                lights.lights(True)
-        t.sleep(1)
+                speechEngine.say('WAKE UP RIGHT NOW')
+                #lights.lights(True)
+                if (toggle):
+                        state = STATE.ASSIGNMENTS
+        elif (state == State.ASSIGNMENTS):
+                homework = requestToSheet.getAssignmentList()
+                speechEngine.say("Good morning Ankith!")
+                speechEngine.say("Here's a look at your upcoming assignments.")
+                for work in homework:
+                        sayString = "In " + work["class"] + " you have " + work["assignment"] + " due " + work["due"]
+                        speechEngine.say(sayString)
+                        calenderSpeech.sayEvents(speechEngine)
+                speechEngine.say("Have a great day today Ankith!")
+                state = STATE.WAITING
+
+        prevSwitch = switch
+        t.sleep(2)
+

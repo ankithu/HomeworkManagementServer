@@ -9,12 +9,12 @@ import os.path
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
-import speechEngine
+
 import time as t
 # If modifying these scopes, delete the file token.pickle.
 SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
 
-def main():
+def sayEvents(speechEngine):
     """Shows basic usage of the Google Calendar API.
     Prints the start and name of the next 10 events on the user's calendar.
     """
@@ -45,8 +45,10 @@ def main():
     #end = start + timedelta(1)
     #print(start.isoformat())
     #print(end.isoformat())
-    events_result = service.events().list(calendarId='primary', timeMin='2019-08-20T00:00:00-00:00',
-                                        maxResults=10, timeMax= '2019-08-20T23:59:00-00:00',singleEvents=True,
+    today = datetime.now().date()
+    dateString = today.strftime("%Y-%m-%d")
+    events_result = service.events().list(calendarId='primary', timeMin=dateString+'T00:00:00-00:00',
+                                        maxResults=10, timeMax= dateString+'T23:59:00-00:00',singleEvents=True,
                                         orderBy='startTime').execute()
     events = events_result.get('items', [])
     sayString = 'Today you have the following events: '
@@ -65,6 +67,3 @@ def main():
     for event in sayList[1:]:
         speechEngine.say('and ' + event)
         t.sleep(1.0)
-
-if __name__ == '__main__':
-    main()
